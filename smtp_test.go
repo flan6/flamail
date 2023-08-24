@@ -1,0 +1,1 @@
+package flamail_test
