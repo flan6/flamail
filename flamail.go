@@ -17,5 +17,5 @@ type Attachment struct {
 }
 
 type Mailer interface {
-	Send(email Email, config string, attachments ...Attachment) error
+	Send(email Email, attachments ...Attachment) error
 }
