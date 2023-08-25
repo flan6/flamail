@@ -3,7 +3,7 @@ package smtpsender_test
 import (
 	"testing"
 
-	"github.com/flan6/flamail"
+	"github.com/flan6/flamail/entity"
 	smtpsender "github.com/flan6/flamail/smtp_sender"
 )
 
@@ -13,7 +13,7 @@ func Test_SMTPSend(t *testing.T) {
 			smtpsender.WithGmail("example@gmail.com", "invalid"),
 		)
 
-		if err := mailer.Send(flamail.Email{
+		if err := mailer.Send(entity.Email{
 			From: "example@example.com",
 			To:   "example@example.com",
 		}); err == nil {

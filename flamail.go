@@ -1,21 +1,7 @@
 package flamail
 
-import "net/textproto"
-
-type Email struct {
-	From            string
-	To              string
-	Subject         string
-	Body            string
-	UnsubscribeLink string
-}
-
-type Attachment struct {
-	ContentType      string
-	Content          []byte
-	AddCustomHeaders func(*textproto.MIMEHeader)
-}
+import "github.com/flan6/flamail/entity"
 
 type Mailer interface {
-	Send(email Email, attachments ...Attachment) error
+	Send(email entity.Email, attachments ...entity.Attachment) error
 }

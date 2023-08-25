@@ -11,7 +11,7 @@ import (
 	"net/textproto"
 	"strings"
 
-	"github.com/flan6/flamail"
+	"github.com/flan6/flamail/entity"
 )
 
 type SmtpMailer struct {
@@ -40,7 +40,7 @@ func WithGmail(login, pass string) func(*SmtpMailer) {
 	}
 }
 
-func (s SmtpMailer) Send(content flamail.Email, attachments ...flamail.Attachment) error {
+func (s SmtpMailer) Send(content entity.Email, attachments ...entity.Attachment) error {
 	fromAddress, err := mail.ParseAddress(content.From)
 	if err != nil {
 		return err
@@ -108,14 +108,12 @@ func (s SmtpMailer) Send(content flamail.Email, attachments ...flamail.Attachmen
 	}
 	message = strings.SplitN(message, "\n", 2)[1]
 
-	emailClient := &smtp.Client{}
-
-	conn, err := smtp.Dial(s.SmtpServerAddress)
+	emailClient, err := smtp.Dial(s.SmtpServerAddress)
 	if err != nil {
 		return fmt.Errorf("fail to send Hello message; %w", err)
 	}
 
-	err = conn.StartTLS(
+	err = emailClient.StartTLS(
 		&tls.Config{
 			ServerName:         s.SmtpServerDomain,
 			InsecureSkipVerify: false,
@@ -125,12 +123,13 @@ func (s SmtpMailer) Send(content flamail.Email, attachments ...flamail.Attachmen
 		return fmt.Errorf("could not start TLS connection; %w", err)
 	}
 
-	err = conn.Auth(smtp.PlainAuth("", s.SmtpServerAuthEmail, s.SmtpServerAuthPassword, s.SmtpServerDomain))
+	err = emailClient.Auth(smtp.PlainAuth("", s.SmtpServerAuthEmail, s.SmtpServerAuthPassword, s.SmtpServerDomain))
 	if err != nil {
 		return fmt.Errorf("could not auth to SMTP; %w", err)
 	}
 
 	defer emailClient.Close()
+
 	if err = emailClient.Mail(fromAddress.Address); err != nil {
 		return fmt.Errorf("fail to set from address; %w", err)
 	}
